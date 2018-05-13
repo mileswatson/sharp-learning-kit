@@ -222,13 +222,13 @@ namespace SharpLearningKit
             return this;
         }
 
-        public Matrix Forward(Matrix prevLayer, Matrix prevSynapse, bool doParallel = false, int numCores = 1)
+        public Matrix Forwards(Matrix prevLayer, Matrix prevSynapse, bool doParallel = false, int numCores = 1)
         {
             //double[] someValues = (double[]) prevLayer.values.Clone();
-            this.values = new double[prevLayer.numRows*prevSynapse.numColumns];
-            numCores = Math.Min(numCores,this.values.Length);
+            //this.values = new double[prevLayer.numRows*prevSynapse.numColumns];
             if ( doParallel )
             {
+                numCores = Math.Min(numCores,this.values.Length);
                 Parallel.For(0, numCores, i =>
                 {
                     int startPos = (this.values.Length * i) / numCores;
@@ -262,6 +262,7 @@ namespace SharpLearningKit
             else
             {
                 int bPos = 0, currentRow = 0;
+                Array.Clear(this.values,0,this.values.Length);
                 for (int aPos = 0; aPos < prevLayer.values.Length; aPos++)
                 {
                     for (int cPos = currentRow; cPos < currentRow + prevSynapse.numColumns; cPos++)
@@ -280,21 +281,71 @@ namespace SharpLearningKit
                     this.values[i] = 1.0d / (1.0d + Math.Exp(-this.values[i]));
                 }
             }
-            this.numRows = prevLayer.numRows;
-            this.numColumns = prevSynapse.numColumns;
             return this;
         }
 
-        public Matrix FirstBackwards(Matrix answers, Matrix lastLayer)
+        public Matrix FirstBackwards(Matrix answers, Matrix lastLayer, bool doParallel=false, int numCores = 1)
         {
-            this.numRows = answers.numRows;
-            this.numColumns = answers.numColumns;
-            this.values = new double[numRows*numColumns];
-            for (int i = 0; i < this.numRows * this.numColumns; i++)
+            if ( doParallel )
             {
-                this.values[i] = (answers.values[i] - lastLayer.values[i]) * (lastLayer.values[i] * (1 - lastLayer.values[i]));
+                numCores = Math.Min(numCores,this.values.Length);
+                Parallel.For(0, numCores, coreNum => 
+                {
+                    int startPos = (this.values.Length * coreNum) / numCores;
+                    int endPos = (coreNum == numCores-1) ? this.values.Length : (this.values.Length * (coreNum + 1)) / numCores;
+                    for ( int i = startPos; i < endPos; i++ )
+                    {
+                        this.values[i] = (answers.values[i] - lastLayer.values[i])
+                                        * (lastLayer.values[i] * (1 - lastLayer.values[i]));
+                    }
+                });
             }
+            else
+            {
+                for (int i = 0; i < this.values.Length; i++)
+                {
+                    this.values[i] = (answers.values[i] - lastLayer.values[i])
+                                    * (lastLayer.values[i] * (1 - lastLayer.values[i]));
+                }
+            }
+            return this;
+        }
+
+        public Matrix Backwards(Matrix nextDelta, Matrix nextLayer, Matrix nextSynapse)
+        {
             return this;
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

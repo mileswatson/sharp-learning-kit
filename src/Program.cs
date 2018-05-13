@@ -9,9 +9,10 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            Matrix a = new Matrix(1024,512);
-            Matrix b = new Matrix(1024,512);
-            Matrix c = new Matrix();
+            Matrix a = new Matrix(3,4);
+            Matrix b = new Matrix(3,4);
+            Matrix c = new Matrix(3,4);
+            Matrix store = new Matrix(3,4);
             a.RandFill();
             b.RandFill();
             //a.PDot(b);
@@ -21,16 +22,19 @@ namespace Demo
             
             Stopwatch t = new Stopwatch();
             t.Start();
-            for (int i = 0; i < 1000; i++) {
-                c.FirstBackwards(a,b);
-            }
-            t.Stop();
-            Console.WriteLine(t.ElapsedMilliseconds);
-            t.Restart();
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 1; i++) {
                 c.Copy(a).Subtract(b).DerivativeMultiply(b);
             }
             t.Stop();
+            //Console.WriteLine(c);
+            store.Copy(c);
+            Console.WriteLine(t.ElapsedMilliseconds);
+            t.Restart();
+            for (int i = 0; i < 1; i++) {
+                c.FirstBackwards(a,b,true,4);
+            }
+            t.Stop();
+            //Console.WriteLine(c);
             Console.WriteLine(t.ElapsedMilliseconds);
             
             /*
