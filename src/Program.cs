@@ -9,33 +9,39 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            Matrix a = new Matrix(3,4);
-            Matrix b = new Matrix(3,4);
-            Matrix c = new Matrix(3,4);
-            Matrix store = new Matrix(3,4);
+            Matrix a = new Matrix(2048,1024);
+            Matrix b = new Matrix(4096,1024);
+            Matrix c = new Matrix(4096,2048);
+            Matrix d = new Matrix(4096,2048);
+            Matrix temp = new Matrix();
             a.RandFill();
             b.RandFill();
+            c.RandFill();
             //a.PDot(b);
             //Console.WriteLine(a);
             //c.Forward(a,b);
             //Console.WriteLine(c);
             
             Stopwatch t = new Stopwatch();
+
             t.Start();
             for (int i = 0; i < 1; i++) {
-                c.Copy(a).Subtract(b).DerivativeMultiply(b);
+                d.Copy(a).Dot(temp.Copy(b).Transform()).DerivativeMultiply(c);
             }
             t.Stop();
-            //Console.WriteLine(c);
-            store.Copy(c);
+
+            //Console.WriteLine(d);
             Console.WriteLine(t.ElapsedMilliseconds);
+
             t.Restart();
             for (int i = 0; i < 1; i++) {
-                c.FirstBackwards(a,b,true,4);
+                d.Backwards(a,b,c,true,4);
             }
             t.Stop();
-            //Console.WriteLine(c);
+
+            //Console.WriteLine(d);
             Console.WriteLine(t.ElapsedMilliseconds);
+            
             
             /*
             Matrix l0 = new Matrix(100000,64);

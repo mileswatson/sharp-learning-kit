@@ -311,8 +311,64 @@ namespace SharpLearningKit
             return this;
         }
 
-        public Matrix Backwards(Matrix nextDelta, Matrix nextLayer, Matrix nextSynapse)
+        public Matrix Backwards(Matrix nextDelta, Matrix nextSynapse, Matrix nextLayer, bool doParallel = false, int numCores = 1)
         {
+            if ( doParallel )
+            {
+                numCores = Math.Min(numCores,this.values.Length);
+                Parallel.For(0, numCores, coreNum => 
+                {
+                    int startPos = (this.values.Length * coreNum) / numCores;
+                    int endPos = (coreNum == numCores-1) ? this.values.Length : (this.values.Length * (coreNum + 1)) / numCores;
+                    int aPos = ( startPos / nextSynapse.numRows ) * nextDelta.numColumns;
+                    int bPos = ( startPos * nextDelta.numColumns ) % nextSynapse.values.Length;
+                    double total;
+                    for ( int cPos = startPos; cPos < endPos; cPos++ )
+                    {
+                        total = 0;
+                        for ( int i = 0 ; i < nextDelta.numColumns ; i++ )
+                        {
+                            total += nextDelta.values[aPos] * nextSynapse.values[bPos];
+                            aPos++;
+                            bPos++;
+                        }
+                        this.values[cPos] = total * nextLayer.values[cPos] * ( 1 - nextLayer.values[cPos] );
+                        if ( bPos == nextSynapse.values.Length )
+                        {
+                            bPos = 0;
+                        }
+                        else
+                        {
+                            aPos -= nextDelta.numColumns;
+                        }
+                    }
+                });
+            }
+            else
+            {
+                int aPos = 0;
+                int bPos = 0;
+                double total = 0;
+                for (int cPos = 0; cPos < this.values.Length; cPos ++)
+                {
+                    total = 0;
+                    for ( int i = 0 ; i < nextDelta.numColumns ; i++ )
+                    {
+                        total += nextDelta.values[aPos] * nextSynapse.values[bPos];
+                        aPos++;
+                        bPos++;
+                    }
+                    this.values[cPos] = total * nextLayer.values[cPos] * ( 1 - nextLayer.values[cPos] );
+                    if ( bPos == nextSynapse.values.Length )
+                    {
+                        bPos = 0;
+                    }
+                    else
+                    {
+                        aPos -= nextDelta.numColumns;
+                    }
+                }
+            }
             return this;
         }
     }
