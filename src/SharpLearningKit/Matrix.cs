@@ -371,6 +371,22 @@ namespace SharpLearningKit
             }
             return this;
         }
+
+        public Matrix Adjust(Matrix thisLayer, Matrix thisDelta, bool doParallel, int numCores)
+        {
+            if ( doParallel )
+            {
+
+            }
+            else
+            {
+                for ( int cPos = 0 ; cPos < this.values.Length ; cPos ++ )
+                {
+                    
+                }
+            }
+            return this;
+        }
     }
 }
 
