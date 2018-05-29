@@ -372,17 +372,31 @@ namespace SharpLearningKit
             return this;
         }
 
-        public Matrix Adjust(Matrix thisLayer, Matrix thisDelta, bool doParallel, int numCores)
+        public Matrix Adjust(Matrix thisLayer, Matrix thisDelta, bool doParallel = false, int numCores = 4)
         {
             if ( doParallel )
             {
-
+                
             }
             else
             {
-                for ( int cPos = 0 ; cPos < this.values.Length ; cPos ++ )
+                int bReset = 0;
+                int cPos = 0;
+                int limit = this.numColumns;
+                for ( int aPos = 0 ; aPos < thisLayer.values.Length ; aPos++ )
                 {
-                    
+                    if (cPos == this.values.Length)
+                    {
+                        cPos = 0;
+                        bReset += this.numColumns;
+                        limit += this.numColumns;
+                    }
+                    for ( int bPos = bReset; bPos < limit; bPos++ )
+                    {
+                        //Console.WriteLine("{0} * {1} --> {2}",aPos,bPos,cPos);
+                        this.values[cPos] += thisLayer.values[aPos] * thisDelta.values[bPos];
+                        cPos++;
+                    }
                 }
             }
             return this;

@@ -9,14 +9,50 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            Matrix a = new Matrix(2048,1024);
-            Matrix b = new Matrix(4096,1024);
-            Matrix c = new Matrix(4096,2048);
-            Matrix d = new Matrix(4096,2048);
+            Matrix answers = new Matrix(new double[,]{{0,1},{1,0},{0.6,0.7},{0.9,0.2}});
+            Matrix l0 = new Matrix(new double[,]{{1,0},{0,1},{0.7,0.6},{0.2,0.9}});     // 4 x 2
+            Matrix l1 = new Matrix(4,5);
+            Matrix l2 = new Matrix(4,2);
+
+            Matrix s0 = new Matrix(2,5);
+            Matrix s1 = new Matrix(5,2);
+
+            s0.RandFill();
+            s1.RandFill();
+
+            Matrix d0 = new Matrix(4,5);
+            Matrix d1 = new Matrix(4,2);
+
+            bool doParallel = false;
+
+            Stopwatch t = new Stopwatch();
+
+            t.Restart();
+
+            for (int i = 0; i < 10000; i++)
+            {
+                l1.Forwards(l0,s0,doParallel);
+                l2.Forwards(l1,s1,doParallel);
+                d1.FirstBackwards(answers,l2,doParallel);
+                d0.Backwards(d1,s1,l1,doParallel);
+                s1.Adjust(l1,d1);
+                s0.Adjust(l0,d0);
+            }
+
+            t.Stop();
+
+            Console.WriteLine(t.ElapsedMilliseconds);
+
+            Console.WriteLine(l2);
+            /*
+            int inputSize = 256, outputSize = 128, sampleSize = 10000, iterations = 1;
+            Matrix a = new Matrix(sampleSize,inputSize);
+            Matrix b = new Matrix(sampleSize,outputSize);
+            Matrix n = new Matrix(inputSize,outputSize);
+            Matrix o = new Matrix(inputSize,outputSize);
             Matrix temp = new Matrix();
             a.RandFill();
             b.RandFill();
-            c.RandFill();
             //a.PDot(b);
             //Console.WriteLine(a);
             //c.Forward(a,b);
@@ -25,22 +61,23 @@ namespace Demo
             Stopwatch t = new Stopwatch();
 
             t.Start();
-            for (int i = 0; i < 1; i++) {
-                d.Copy(a).Dot(temp.Copy(b).Transform()).DerivativeMultiply(c);
+            for (int i = 0; i < iterations; i++) {
+                o.Add(temp.Copy(a).Transform().Dot(b));
             }
             t.Stop();
 
-            //Console.WriteLine(d);
+            //Console.WriteLine(o);
             Console.WriteLine(t.ElapsedMilliseconds);
 
             t.Restart();
-            for (int i = 0; i < 1; i++) {
-                d.Backwards(a,b,c,true,4);
+            for (int i = 0; i < iterations; i++) {
+                n.Adjust(a,b);
             }
             t.Stop();
 
-            //Console.WriteLine(d);
+            //Console.WriteLine(n);
             Console.WriteLine(t.ElapsedMilliseconds);
+            */
             
             
             /*
