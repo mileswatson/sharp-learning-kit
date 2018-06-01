@@ -9,6 +9,9 @@ namespace Demo
     {
         static void Main(string[] args)
         {
+            Model x = new Model(new int[]{2,5,2});
+            x.Train(new double[,]{{1,0},{0,1},{0.3,0.7},{0.9,0.1}}, new double[,]{{0,1},{1,0},{0.7,0.3},{0.1,0.9}}, 100000);
+            /*
             Matrix answers = new Matrix(new double[,]{{0,1},{1,0},{0.6,0.7},{0.9,0.2}});
             Matrix l0 = new Matrix(new double[,]{{1,0},{0,1},{0.7,0.6},{0.2,0.9}});     // 4 x 2
             Matrix l1 = new Matrix(4,5);
@@ -44,6 +47,7 @@ namespace Demo
             Console.WriteLine(t.ElapsedMilliseconds);
 
             Console.WriteLine(l2);
+            */
             /*
             int inputSize = 256, outputSize = 128, sampleSize = 10000, iterations = 1;
             Matrix a = new Matrix(sampleSize,inputSize);
