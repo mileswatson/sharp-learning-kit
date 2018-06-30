@@ -20,6 +20,7 @@ namespace Demo
             Loader l;
             Parser p;
             Matrix questions, answers;
+            string path = "C:/Users/miles/Documents/Programming/sharp-learning-kit/data/";
             while (true)
             {
                 while (true)
@@ -38,23 +39,39 @@ namespace Demo
                             m = new Model(Array.ConvertAll(Console.ReadLine().Split(), int.Parse));
                             Clear();
                             Console.WriteLine("NAME:");
-                            l = new Loader(Console.ReadLine().ToLower() + ".slkm");
+                            l = new Loader(path+Console.ReadLine().ToLower() + ".slkm");
                             l.Save(m);
                             break;
                         }
                         else if (userAnswer == "LOAD")
                         {
                             Console.WriteLine("NAME:");
-                            l = new Loader(Console.ReadLine().ToLower() + ".slkm");
+                            l = new Loader(path+Console.ReadLine().ToLower() + ".slkm");
                             m = l.Load();
                             break;
                         }
                     }
                     catch (Exception e)
                     {
-                        //Console.WriteLine(e);
+                        Console.WriteLine(e);
                     }
                 }
+                while (true)
+                {
+                    Clear();
+                    try
+                    {
+                        Console.WriteLine("CSV:");
+                        p = new Parser(2, 2);
+                        (questions, answers) = p.Load(path+Console.ReadLine().ToLower() + ".csv");
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+                /*
                 while (true)
                 {
                     Clear();
@@ -67,26 +84,14 @@ namespace Demo
                     }
                     catch (Exception e)
                     {
-                        while (true)
-                        {
-                            Clear();
-                            try
-                            {
-                                Console.WriteLine("CSV:");
-                                p = new Parser(2, 2);
-                                (questions, answers) = p.Load(Console.ReadLine().ToLower() + ".csv");
-                                break;
-                            }
-                            catch (Exception e)
-                            {
-
-                            }
-                        }
+                        Console.WriteLine(e);
                     }
                 }
+                */
                 m.Train(questions, answers, 10000);
                 l.Save(m);
                 Console.WriteLine( m.Predict( questions ) );
+                Console.ReadLine();
             }
         }
     }
