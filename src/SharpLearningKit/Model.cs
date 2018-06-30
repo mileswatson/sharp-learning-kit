@@ -2,6 +2,7 @@ using System;
 
 namespace SharpLearningKit
 {
+    [Serializable]
     class Model
     {
         public Matrix[] synapses;
@@ -13,22 +14,18 @@ namespace SharpLearningKit
             {
                 this.synapses[i] = new Matrix(structure[i], structure[i + 1]);
                 this.synapses[i].RandFill();
-                //Console.WriteLine(this.synapses[i]);
             }
         }
 
-        public void Train(double[,] questions, double[,] answers, int iterations, bool doParallel = false, int numCores = 4)
+        public void Train(Matrix questions, Matrix answers, int iterations, bool doParallel = false, int numCores = 4)
         {
             Matrix[] layers = new Matrix[this.synapses.Length+1];
             Matrix[] deltas = new Matrix[this.synapses.Length];
-            Matrix solution = new Matrix(answers);
-            layers[0] = new Matrix(questions);
+            layers[0] = questions;
             for (int i = 0; i < this.synapses.Length; i++)
             {
-                layers[i+1] = new Matrix(solution.numRows,this.synapses[i].numColumns);
-                Console.WriteLine("layers[{0}] = {1} x {2}",i+1,solution.numRows,this.synapses[i].numColumns);
-                deltas[i] = new Matrix(solution.numRows,this.synapses[i].numColumns);
-                Console.WriteLine("deltas[{0}] = {1} x {2}",i,solution.numRows,this.synapses[i].numColumns);
+                layers[i+1] = new Matrix(answers.numRows,this.synapses[i].numColumns);
+                deltas[i] = new Matrix(answers.numRows,this.synapses[i].numColumns);
             }
             for (int iterationNum = 0; iterationNum < iterations; iterationNum++) {
 
@@ -37,14 +34,29 @@ namespace SharpLearningKit
                     layers[i+1].Forwards(layers[i],this.synapses[i]);
                 }
 
-                deltas[this.synapses.Length-1].FirstBackwards(solution, layers[this.synapses.Length]);
+                deltas[this.synapses.Length-1].FirstBackwards(answers, layers[this.synapses.Length]);
                 synapses[this.synapses.Length-1].Adjust(layers[this.synapses.Length-1], deltas[this.synapses.Length-1]);
                 for (int i = this.synapses.Length - 2; i >= 0; i--) {
                     deltas[i].Backwards(deltas[i+1], this.synapses[i+1], layers[i+1]);
                     synapses[i].Adjust(layers[i], deltas[i]);
                 }
             }
-            Console.WriteLine(layers[this.synapses.Length]);
         }
+
+        public Matrix Predict(Matrix questions, bool doParallel = false, int numCores = 4)
+        {
+            Matrix[] layers = new Matrix[this.synapses.Length+1];
+            layers[0] = questions;
+            for (int i = 0; i < this.synapses.Length; i++)
+            {
+                layers[i+1] = new Matrix(layers[0].numRows,this.synapses[i].numColumns);
+            }
+            for (int i = 0; i < this.synapses.Length; i++)
+            {
+                layers[i+1].Forwards(layers[i],this.synapses[i]);
+            }
+            return layers[this.synapses.Length];
+        }
+
     }
 }

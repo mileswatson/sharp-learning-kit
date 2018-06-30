@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace SharpLearningKit
 {
 
+    [Serializable]
     class Matrix
     {
         public double[] values;
@@ -224,8 +225,6 @@ namespace SharpLearningKit
 
         public Matrix Forwards(Matrix prevLayer, Matrix prevSynapse, bool doParallel = false, int numCores = 1)
         {
-            //double[] someValues = (double[]) prevLayer.values.Clone();
-            //this.values = new double[prevLayer.numRows*prevSynapse.numColumns];
             if ( doParallel )
             {
                 numCores = Math.Min(numCores,this.values.Length);
@@ -393,7 +392,6 @@ namespace SharpLearningKit
                     }
                     for ( int bPos = bReset; bPos < limit; bPos++ )
                     {
-                        //Console.WriteLine("{0} * {1} --> {2}",aPos,bPos,cPos);
                         this.values[cPos] += thisLayer.values[aPos] * thisDelta.values[bPos];
                         cPos++;
                     }
@@ -401,37 +399,16 @@ namespace SharpLearningKit
             }
             return this;
         }
+
+        public double[,] Extract()
+        {
+            double[,] array = new double[this.numRows, this.numColumns];
+            for (int row = 0; row < this.numRows; row++) {
+                for (int column = 0; column < this.numColumns; column++) {
+                    array[row, column] = this.values[row * this.numColumns + column];
+                }
+            }
+            return array;
+        }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
