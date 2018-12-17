@@ -2,10 +2,14 @@ using System;
 
 namespace SharpLearningKit
 {
-    [Serializable]
-    class Model
+    public class Model
     {
         public Matrix[] synapses;
+
+        public Model()
+        {
+            this.synapses = new Matrix[0];
+        }
 
         public Model(int[] structure)
         {
@@ -57,6 +61,5 @@ namespace SharpLearningKit
             }
             return layers[this.synapses.Length];
         }
-
     }
 }
