@@ -35,7 +35,7 @@ namespace SharpLearningKit
                     {
                         questions[i,j] = Convert.ToDouble(values[j]);
                     }
-                    else
+                    else if (this.answers > 0)
                     {
                         answers[i,j-this.questions] = Convert.ToDouble(values[j]);
                     }
