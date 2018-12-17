@@ -1,18 +1,17 @@
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
 
 namespace SharpLearningKit
 {
     class Loader
     {
         string filename;
-        BinaryFormatter fmtr;
+        XmlSerializer fmtr;
 
         public Loader(string filename)
         {
             this.filename = filename;
-            this.fmtr = new BinaryFormatter();
+            this.fmtr = new XmlSerializer(typeof(Model));
         }
 
         public Model Load()
@@ -27,6 +26,14 @@ namespace SharpLearningKit
         {
             FileStream ws = new FileStream(this.filename, FileMode.Create, FileAccess.Write);
             this.fmtr.Serialize(ws, x);
+            ws.Close();
+        }
+
+        public void Savex(Model x)
+        {
+            FileStream ws = new FileStream(this.filename, FileMode.Create, FileAccess.Write);
+            XmlSerializer writer = new XmlSerializer(typeof(Model));
+            writer.Serialize(ws, x);
             ws.Close();
         }
     }
