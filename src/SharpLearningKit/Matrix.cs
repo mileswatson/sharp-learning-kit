@@ -5,14 +5,20 @@ using System.Threading.Tasks;
 namespace SharpLearningKit
 {
 
-    [Serializable]
-    class Matrix
+    public class Matrix
     {
         public double[] values;
 
         public int numRows;
 
         public int numColumns;
+
+        public Matrix()
+        {
+            this.numRows = 0;
+            this.numColumns = 0;
+            this.values = new double[0];
+        }
 
         public Matrix(double[,] someValues)
         {
@@ -49,6 +55,15 @@ namespace SharpLearningKit
             for (int i = 0; i < this.values.Length; i++)
             {
                 this.values[i] = (randgen.NextDouble() * 2) - 1;
+            }
+            return this;
+        }
+
+        public Matrix Round(int dp)
+        {
+            for (int i = 0; i < this.values.Length; i++)
+            {
+                this.values[i] = Math.Round(this.values[i], dp);
             }
             return this;
         }
